@@ -15,8 +15,5 @@ start:
 build:
 	./build.sh
 
-package-reinstall:
-	python3 -m pip install --user dist/*.whl --force-reinstall
-
 lint:
-	poetry run flake8 app
+	poetry run flake8 page_analyzer
