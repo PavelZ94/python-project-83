@@ -7,9 +7,11 @@ from flask import (Flask,
                    get_flashed_messages,
                    redirect,
                    url_for)
-from .validate import validate
+from .validate import validate, normalize
 import psycopg2
-
+from .database import (get_all_urls,
+                       get_url_by_name,
+                       get_url_by_id)
 
 load_dotenv()
 
@@ -32,45 +34,45 @@ def index():
 
 @app.get('/urls')
 def get_urls():
-    cur.execute("SELECT * FROM urls")
-    urls = cur.fetchall()
-    messages = get_flashed_messages(with_categories=True)
+    urls = get_all_urls(DATABASE_URL)
     return render_template('urls.html',
-                           messages=messages,
                            urls=urls)
 
 
 @app.post('/urls')
 def post_urls():
-    url = request.form.get('url')
+    url = request.form['url']
     errors = validate(url)
 
     if errors:
-        if 'Url if empty' in errors:
+        if 'Url is empty' in errors:
             flash('Адрес сайта обязателен', 'error')
         elif 'Not valid url' in errors:
             flash('Некорректный адрес сайта', 'error')
+        elif 'Url not found' in errors:
+            flash('Адрес сайта не найден', 'error')
         messages = get_flashed_messages(with_categories=True)
         return render_template('index.html',
                                url=url,
                                messages=messages), 422
 
-    cur.execute("INSERT INTO urls (name, created_at) VALUES (%s, %s)", (url,))
-    conn.commit()
+    normalized_url = normalize(url)
+    id_ = get_url_by_name(DATABASE_URL, normalized_url)
     flash('Адрес успешно добавлен', 'success')
-    return redirect(url_for('show_url', id=url_id)) #need to check the way of connect id.
+    return redirect(url_for('show_url', id=id_))
 
 
-@app.route('/urls/<int:id>')
+@app.route('/urls/<int:id>', methods=['GET'])
 def show_url(id):
-    cur.execute("SELECT * FROM urls WHERE id = %s", (id,))
-    url = cur.fetchone()
+    url = get_url_by_id(DATABASE_URL, id)
     messages = get_flashed_messages(with_categories=True)
     return render_template(
         'show.html',
-        url=url,
+        name=url.name,
+        created_at=url.created_at,
+        id=url.id,
         messages=messages)
-# need to add new html with all urls. And check other urls.
+
 
 if __name__ == '__main__':
     app.run()
