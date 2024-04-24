@@ -10,8 +10,9 @@ from flask import (Flask,
 from .validate import validate, normalize
 import psycopg2
 from .database import (get_all_urls,
-                       get_url_by_name,
-                       get_url_by_id)
+                       add_url_by_name,
+                       get_url_by_id,
+                       get_url_by_name)
 
 load_dotenv()
 
@@ -57,9 +58,17 @@ def post_urls():
                                messages=messages), 422
 
     normalized_url = normalize(url)
-    id_ = get_url_by_name(DATABASE_URL, normalized_url)
-    flash('Адрес успешно добавлен', 'success')
-    return redirect(url_for('show_url', id=id_))
+    dublicate = get_url_by_name(DATABASE_URL, normalized_url)
+    if dublicate:
+        flash('Адрес уже добавлен', 'error')
+        messages = get_flashed_messages(with_categories=True)
+        return render_template('index.html',
+                               messages=messages), 422
+
+    else:
+        id_ = add_url_by_name(DATABASE_URL, normalized_url)
+        flash('Адрес успешно добавлен', 'success')
+        return redirect(url_for('show_url', id=id_))
 
 
 @app.route('/urls/<int:id>', methods=['GET'])
