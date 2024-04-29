@@ -23,7 +23,7 @@
         <tr>
           <td>{{ url.id }}</td>
           <td><a href="{{ url_for('show_url', id=url.id) }}">{{ url.name }}</a></td>
-          <td></td>
+          <td>{{ checks[url.id].created_at }}</td>
           <td></td>
         </tr>
         {% endfor %}

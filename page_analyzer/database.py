@@ -21,7 +21,7 @@ def add_url_by_name(database, url):
     with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
         curs.execute(
             '''INSERT INTO urls (name, created_at) VALUES (%s, %s) RETURNING id;''',
-            (url, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+            (url, datetime.now().date()))
         url_info = curs.fetchone()
         id_ = url_info.id
     conn.commit()
@@ -43,3 +43,36 @@ def get_url_by_id(database, id_):
         curs.execute("SELECT * FROM urls WHERE id = %s", (id_,))
         url = curs.fetchone()
         return url
+
+
+def add_check(database, id_):
+    conn = psycopg2.connect(database)
+    with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
+        curs.execute(
+            '''INSERT INTO url_checks (url_id, created_at) VALUES (%s, %s) RETURNING id;''',
+            (id_, datetime.now().date()))
+        check = curs.fetchone()
+        id = check.id
+    conn.commit()
+    conn.close()
+    return id
+
+
+def get_checks(database, id_):
+    conn = psycopg2.connect(database)
+    with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
+        curs.execute("SELECT * FROM url_checks WHERE url_id=%s ORDER BY id DESC", (id_,))
+        checks = curs.fetchall()
+    conn.commit()
+    conn.close()
+    return checks
+
+
+def get_latest_check(database, id_):
+    conn = psycopg2.connect(database)
+    with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
+        curs.execute("SELECT * FROM url_checks WHERE url_id=%s ORDER BY created_at DESC LIMIT 1", (id_,))
+        check_date = curs.fetchone()
+        conn.commit()
+        conn.close()
+        return check_date
