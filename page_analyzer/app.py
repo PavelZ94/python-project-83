@@ -9,6 +9,8 @@ from flask import (Flask,
                    url_for)
 from .validate import validate, normalize
 import psycopg2
+import requests
+from requests.exceptions import RequestException
 from .database import (get_all_urls,
                        add_url_by_name,
                        get_url_by_id,
@@ -92,9 +94,17 @@ def show_url(id):
 
 @app.route('/urls/<int:id>/checks', methods=['POST'])
 def check_post(id):
-    check_id = add_check(DATABASE_URL, id)
+    url = get_url_by_id(DATABASE_URL, id)
+    try:
+        response = requests.get(url.name)
+        if response.status_code == 200:
+            check_id = add_check(DATABASE_URL, id)
+            flash('Страница успешно проверена', 'success')
+        else:
+            flash('Произошла ошибка при проверке', 'error')
+    except RequestException:
+        flash('Произошла ошибка при проверке', 'error')
 
-    flash('Страница успешно проверена', 'success')
     return redirect(url_for('show_url', id=id))
 
 
