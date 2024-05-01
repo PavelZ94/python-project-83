@@ -33,23 +33,23 @@
     <table class="table table-bordered table-hover mt-2" data-test="checks">
         <thead>
         <tr>
-            <th>ID</th>
-            <th>Код ответа</th>
-            <th>h1</th>
-            <th>title</th>
-            <th>description</th>
-            <th>Дата создания</th>
+            <th style="text-align: center;">ID</th>
+            <th style="text-align: center;">Код ответа</th>
+            <th style="text-align: center;">h1</th>
+            <th style="text-align: center;">title</th>
+            <th style="text-align: center;">description</th>
+            <th style="text-align: center;">Дата создания</th>
         </tr>
         </thead>
         <tbody>
         {% for check in checks %}
         <tr>
-            <td>{{ check.id }}</td>
-            <td>{{ check.status_code }}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>{{ check.created_at }}</td>
+            <td style="text-align: center;">{{ check.id }}</td>
+            <td style="text-align: center;">{{ check.status_code }}</td>
+            <td>{{ check.h1 }}</td>
+            <td>{{ check.title }}</td>
+            <td>{{ check.description }}</td>
+            <td style="text-align: center;">{{ check.created_at }}</td>
         </tr>
         {% endfor %}
         </tbody>

@@ -1,5 +1,8 @@
 import os
 from dotenv import load_dotenv
+import psycopg2
+import requests
+from bs4 import BeautifulSoup
 from flask import (Flask,
                    render_template,
                    request,
@@ -8,8 +11,6 @@ from flask import (Flask,
                    redirect,
                    url_for)
 from .validate import validate, normalize
-import psycopg2
-import requests
 from requests.exceptions import RequestException
 from .database import (get_all_urls,
                        add_url_by_name,
@@ -97,14 +98,19 @@ def check_post(id):
     url = get_url_by_id(DATABASE_URL, id)
     try:
         response = requests.get(url.name)
-        if response.status_code == 200:
-            check_id = add_check(DATABASE_URL, id)
-            flash('Страница успешно проверена', 'success')
-        else:
-            flash('Произошла ошибка при проверке', 'error')
+        response.raise_for_status()
+        flash('Страница успешно проверена', 'success')
+
     except RequestException:
         flash('Произошла ошибка при проверке', 'error')
 
+    status_code = response.status_code
+    soup = BeautifulSoup(response.text, 'html.parser')
+    title = soup.title.text if soup.title else ''
+    h1 = soup.h1.text if soup.h1 else ''
+    description = soup.find('meta', {'name': 'description'})
+    description_content = description['content'] if description else ''
+    check_id = add_check(DATABASE_URL, id, status_code, title, h1, description_content)
     return redirect(url_for('show_url', id=id))
 
 

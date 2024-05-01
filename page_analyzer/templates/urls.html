@@ -11,10 +11,10 @@
   <table class="table table-bordered table-hover text-nowrap" data-test="urls">
     <thead>
     <tr>
-      <th>ID</th>
-      <th>Имя</th>
-      <th>Последняя проверка</th>
-      <th>Код ответа</th>
+      <th style="text-align: center;">ID</th>
+      <th style="text-align: center;">Имя</th>
+      <th style="text-align: center;">Последняя проверка</th>
+      <th style="text-align: center;">Код ответа</th>
     </tr>
     </thead>
     <tbody>
@@ -24,8 +24,8 @@
           <td>{{ url.id }}</td>
           <td><a href="{{ url_for('show_url', id=url.id) }}">{{ url.name }}</a></td>
           {% if checks.get(url.id) %}
-            <td>{{ checks[url.id].created_at }}</td>
-            <td>{{ checks[url.id].status_code }}</td>
+            <td style="text-align: center;">{{ checks[url.id].created_at }}</td>
+            <td style="text-align: center;">{{ checks[url.id].status_code }}</td>
           {% else %}
             <td></td>
             <td></td>

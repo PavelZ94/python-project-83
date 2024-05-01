@@ -45,12 +45,13 @@ def get_url_by_id(database, id_):
         return url
 
 
-def add_check(database, id_):
+def add_check(database, id_, status_code, title, h1, description):
     conn = psycopg2.connect(database)
     with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
         curs.execute(
-            '''INSERT INTO url_checks (url_id, created_at, status_code) VALUES (%s, %s, 200) RETURNING id;''',
-            (id_, datetime.now().date()))
+            '''INSERT INTO url_checks (url_id, created_at, status_code, title, h1, description) 
+            VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;''',
+            (id_, datetime.now().date(), status_code, title, h1, description))
         check = curs.fetchone()
         id = check.id
     conn.commit()
