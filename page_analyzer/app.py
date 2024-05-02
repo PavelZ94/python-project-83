@@ -110,7 +110,7 @@ def check_post(id):
     h1 = soup.h1.text if soup.h1 else ''
     description = soup.find('meta', {'name': 'description'})
     description_content = description['content'] if description else ''
-    check_id = add_check(DATABASE_URL, id, status_code, title, h1, description_content)
+    add_check(DATABASE_URL, id, status_code, title, h1, description_content)
     return redirect(url_for('show_url', id=id))
 
 

@@ -21,7 +21,7 @@
     {% if urls %}
         {% for url in urls %}
         <tr>
-          <td>{{ url.id }}</td>
+          <td style="text-align: center;">{{ url.id }}</td>
           <td><a href="{{ url_for('show_url', id=url.id) }}">{{ url.name }}</a></td>
           {% if checks.get(url.id) %}
             <td style="text-align: center;">{{ checks[url.id].created_at }}</td>

@@ -49,7 +49,8 @@ def add_check(database, id_, status_code, title, h1, description):
     conn = psycopg2.connect(database)
     with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
         curs.execute(
-            '''INSERT INTO url_checks (url_id, created_at, status_code, title, h1, description) 
+            '''INSERT INTO url_checks
+            (url_id, created_at, status_code, title, h1, description)
             VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;''',
             (id_, datetime.now().date(), status_code, title, h1, description))
         check = curs.fetchone()
