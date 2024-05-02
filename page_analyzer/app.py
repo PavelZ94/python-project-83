@@ -53,11 +53,11 @@ def post_urls():
 
     if errors:
         if 'Url is empty' in errors:
-            flash('Адрес сайта обязателен', 'error')
+            flash('Адрес сайта обязателен', 'danger')
         elif 'Not valid url' in errors:
-            flash('Некорректный адрес сайта', 'error')
+            flash('Некорректный адрес сайта', 'danger')
         elif 'Url not found' in errors:
-            flash('Адрес сайта не найден', 'error')
+            flash('Адрес сайта не найден', 'danger')
         messages = get_flashed_messages(with_categories=True)
         return render_template('index.html',
                                url=url,
@@ -66,10 +66,9 @@ def post_urls():
     normalized_url = normalize(url)
     dublicate = get_url_by_name(normalized_url)
     if dublicate:
-        flash('Адрес уже добавлен', 'error')
-        messages = get_flashed_messages(with_categories=True)
-        return render_template('index.html',
-                               messages=messages), 422
+        id = dublicate.id
+        flash('Адрес уже добавлен', 'info')
+        return redirect(url_for('show_url', id=id))
 
     else:
         id_ = add_url_by_name(normalized_url)
@@ -100,7 +99,7 @@ def check_post(id):
         flash('Страница успешно проверена', 'success')
 
     except RequestException:
-        flash('Произошла ошибка при проверке', 'error')
+        flash('Произошла ошибка при проверке', 'danger')
         return redirect(url_for('show_url', id=id))
 
     status_code, title, h1, description_content = parser(response)
