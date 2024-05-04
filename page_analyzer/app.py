@@ -54,7 +54,7 @@ def post_urls():
         if 'Url is empty' in errors:
             flash('Адрес сайта обязателен', 'danger')
         elif 'Not valid url' in errors:
-            flash('Некорректный адрес сайта', 'danger')
+            flash('Некорректный URL', 'danger')
         elif 'Url not found' in errors:
             flash('Адрес сайта не найден', 'danger')
         messages = get_flashed_messages(with_categories=True)
@@ -66,12 +66,12 @@ def post_urls():
     dublicate = get_url_by_name(normalized_url)
     if dublicate:
         id_ = dublicate.id
-        flash('Адрес уже добавлен', 'info')
+        flash('Страница уже существует', 'info')
         return redirect(url_for('show_url', id=id_))
 
     else:
         id_ = add_url_by_name(normalized_url)
-        flash('Адрес успешно добавлен', 'success')
+        flash('Страница успешно добавлена', 'success')
         return redirect(url_for('show_url', id=id_))
 
 
