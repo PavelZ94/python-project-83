@@ -6,6 +6,8 @@
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/61f0e2eabfe9d87580cf/maintainability)](https://codeclimate.com/github/PavelZ94/python-project-83/maintainability)
 
+[![Lint_check](https://github.com/PavelZ94/python-project-83/actions/workflows/lint_check.yml/badge.svg)](https://github.com/PavelZ94/python-project-83/actions)
+
 ## About
 
 The Page Analyzer is an application based on the Flask framework. Here, the basic principles of building modern websites on the MVC architecture are worked out: working with routing, query handlers and a template engine, interacting with a database.
