@@ -1,6 +1,6 @@
 import os
-import psycopg2
 import requests
+from requests.exceptions import RequestException
 from flask import (Flask,
                    render_template,
                    request,
@@ -10,8 +10,8 @@ from flask import (Flask,
                    url_for)
 from .validate import validate, normalize
 from .parser import parser
-from requests.exceptions import RequestException
-from .database import (get_all_urls,
+from .database import (connection,
+                       get_all_urls,
                        add_url_by_name,
                        get_url_by_id,
                        get_url_by_name,
@@ -22,12 +22,11 @@ from .database import (get_all_urls,
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY')
-DATABASE_URL = os.getenv('DATABASE_URL')
 
 try:
-    conn = psycopg2.connect(DATABASE_URL)
-    cur = conn.cursor()
-    print('Connection to database established successfully!')
+    with connection() as conn:
+        cur = conn.cursor()
+        print('Connection to database established successfully!')
 except Exception as e:
     print(f'Failed to connect to database: {e}')
 
@@ -66,9 +65,9 @@ def post_urls():
     normalized_url = normalize(url)
     dublicate = get_url_by_name(normalized_url)
     if dublicate:
-        id = dublicate.id
+        id_ = dublicate.id
         flash('Адрес уже добавлен', 'info')
-        return redirect(url_for('show_url', id=id))
+        return redirect(url_for('show_url', id=id_))
 
     else:
         id_ = add_url_by_name(normalized_url)
