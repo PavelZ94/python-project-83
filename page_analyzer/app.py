@@ -25,11 +25,22 @@ app.secret_key = os.getenv('SECRET_KEY')
 
 @app.route('/')
 def index():
+    """
+    Render main page.
+    """
     return render_template('index.html')
 
 
 @app.get('/urls')
 def get_urls():
+    """
+    Render the page with all added URLs.
+    Contains the table with:
+    - id of URL;
+    - the Name of URL;
+    - the date of last check;
+    - status code of last check.
+    """
     urls = get_all_urls()
     checks = {url.id: get_latest_check(url.id) for url in urls}
     return render_template('urls.html',
@@ -39,6 +50,13 @@ def get_urls():
 
 @app.post('/urls')
 def post_urls():
+    """
+    Add new URL. Validate the entered URL for correctness.
+    If it's not correct, or empty,
+    it's redirecting to main page with flash message of error.
+    If the URL was entered before, it's redirecting to the page of this URL.
+    Otherwise, the URL is added, and it's redirecting to the page of this URL.
+    """
     url = request.form['url']
     errors = validate(url)
 
@@ -69,6 +87,22 @@ def post_urls():
 
 @app.route('/urls/<int:id>')
 def show_url(id):
+    """
+    Render the page of URL.
+    Contains two tables with information about URL:
+    First table:
+    - id of URL;
+    - name of URL;
+    - date, when URL was added to database.
+
+    Second table:
+    - check id;
+    - status code of check;
+    - h1 parsed from URL;
+    - title parsed from URL;
+    - description parsed from URL meta;
+    - date of completed check.
+    """
     url = get_url_by_id(id)
     checks = get_checks(id)
     messages = get_flashed_messages(with_categories=True)
@@ -83,6 +117,13 @@ def show_url(id):
 
 @app.route('/urls/<int:id>/checks', methods=['POST'])
 def check_post(id):
+    """
+    Check requested URL. Add the information of completed check to database.
+    If check is successful redirect to the page of URL
+    with information of completed check.
+    If check is not successful redirect to the same page
+    with error message during check.
+    """
     url = get_url_by_id(id)
     try:
         response = requests.get(url.name)
@@ -100,11 +141,17 @@ def check_post(id):
 
 @app.errorhandler(404)
 def page_not_found(error):
+    """
+    Render 404 error page if requested page is missing.
+    """
     return render_template('404.html'), 404
 
 
 @app.errorhandler(500)
 def server_error(error):
+    """
+    Render 500 error if unable to connect server.
+    """
     return render_template('500.html'), 500
 
 

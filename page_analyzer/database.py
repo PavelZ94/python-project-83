@@ -21,9 +21,8 @@ def connection():
     conn = None
     try:
         conn = psycopg2.connect(DATABASE_URL)
-        with conn.cursor() as cur:
-            print('Connection to database established successfully!')
-            return conn
+        print('Connection to database established successfully!')
+        return conn
     except Exception as e:
         print(f'Failed to connect to database: {e}')
         return None
