@@ -10,8 +10,7 @@ from flask import (Flask,
                    url_for)
 from .validate import validate, normalize
 from .parser import parser
-from .database import (connection,
-                       get_all_urls,
+from .database import (get_all_urls,
                        add_url_by_name,
                        get_url_by_id,
                        get_url_by_name,
@@ -22,13 +21,6 @@ from .database import (connection,
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY')
-
-try:
-    with connection() as conn:
-        cur = conn.cursor()
-        print('Connection to database established successfully!')
-except Exception as e:
-    print(f'Failed to connect to database: {e}')
 
 
 @app.route('/')
@@ -104,6 +96,16 @@ def check_post(id):
     status_code, title, h1, description_content = parser(response)
     add_check(id, status_code, title, h1, description_content)
     return redirect(url_for('show_url', id=id))
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def server_error(error):
+    return render_template('500.html'), 500
 
 
 if __name__ == '__main__':

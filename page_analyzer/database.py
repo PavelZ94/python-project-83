@@ -13,9 +13,20 @@ DATABASE_URL = os.getenv('DATABASE_URL')
 
 def connection():
     """
-    Connect to database.
+    Connect to the database and return the connection object.
+
+    Returns:
+        psycopg2.connection: Connection object if successful, None otherwise
     """
-    return psycopg2.connect(DATABASE_URL)
+    conn = None
+    try:
+        conn = psycopg2.connect(DATABASE_URL)
+        with conn.cursor() as cur:
+            print('Connection to database established successfully!')
+            return conn
+    except Exception as e:
+        print(f'Failed to connect to database: {e}')
+        return None
 
 
 def get_all_urls() -> list:
